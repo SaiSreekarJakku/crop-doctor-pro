@@ -50,11 +50,24 @@ def _containment(a: set, b: set) -> float:
     return len(a & b) / len(a)
 
 
-def _phrase_grounded(phrase: str, kb_phrases: List[str], threshold: float) -> bool:
+def _phrase_grounded(phrase: str, kb_phrases: List[str], kb_token_union: set,
+                     threshold: float) -> bool:
+    """An item is grounded if its significant tokens are covered by the KB entry.
+
+    We match against the *union* of the whole entry's tokens (not a single
+    phrase), because a paraphrase may legitimately merge or reorder content
+    across the entry. This tolerates rewording ("cut off" for "remove") while
+    still flagging wholesale fabrication, whose novel content words won't appear
+    anywhere in the entry. Named treatment agents are caught separately by the
+    lexicon check, which is the real safety guarantee.
+    """
     pt = _tokens(phrase)
     if not pt:
         return True
-    return any(_containment(pt, _tokens(k)) >= threshold for k in kb_phrases)
+    # Best single-phrase overlap OR coverage by the entry as a whole.
+    best_phrase = max((_containment(pt, _tokens(k)) for k in kb_phrases), default=0.0)
+    union_cov = _containment(pt, kb_token_union)
+    return max(best_phrase, union_cov) >= threshold
 
 
 def verify_guidance(
@@ -64,10 +77,11 @@ def verify_guidance(
     prevention: List[str],
     entry: KBEntry,
     *,
-    threshold: float = 0.5,
+    threshold: float = 0.30,
 ) -> Dict[str, Any]:
     kb_phrases = entry.all_treatment_phrases + [entry.summary]
     kb_blob = " ".join(kb_phrases).lower()
+    kb_token_union = _tokens(kb_blob)
 
     ungrounded: List[str] = []
     for label, items in (
@@ -76,7 +90,7 @@ def verify_guidance(
         ("prevention", prevention),
     ):
         for item in items:
-            if not _phrase_grounded(item, kb_phrases, threshold):
+            if not _phrase_grounded(item, kb_phrases, kb_token_union, threshold):
                 ungrounded.append(f"{label}: {item!r}")
 
     # Hallucinated treatment agents in the free-text summary.

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crop Doctor Pro</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="brand">
+        <div class="logo">🌿</div>
+        <div>
+          <h1>Crop Doctor Pro</h1>
+          <p>Real vision model · calibrated abstention · KB-grounded guidance</p>
+        </div>
+      </div>
+      <div class="badges" id="badges">
+        <span class="pill"><span class="dot"></span><span id="provBadge">provider…</span></span>
+        <span class="pill" id="modelBadge">model…</span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: input -->
+      <section class="card">
+        <div class="pad">
+          <h2>Leaf photo</h2>
+          <div class="dropzone" id="dropzone">
+            <input type="file" id="fileInput" accept="image/*" />
+            <div class="dz-icon">📷</div>
+            <div class="dz-title">Drop a leaf image here</div>
+            <div class="dz-sub">or click to browse · JPG / PNG</div>
+          </div>
+          <div class="preview-wrap" id="previewWrap">
+            <img id="previewImg" alt="leaf preview" />
+            <div class="change" id="changeBtn">Change</div>
+          </div>
+
+          <div class="field row2">
+            <div>
+              <label for="crop">Crop (optional)</label>
+              <input type="text" id="crop" placeholder="e.g. tomato" />
+            </div>
+            <div>
+              <label for="region">Region (optional)</label>
+              <input type="text" id="region" placeholder="e.g. Karnataka" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="provider">Guidance LLM provider</label>
+            <select id="provider">
+              <option value="auto">Auto (detect key)</option>
+              <option value="deterministic">Deterministic (offline)</option>
+              <option value="ollama">Ollama / gpt-oss</option>
+              <option value="openai">OpenAI (ChatGPT)</option>
+              <option value="anthropic">Anthropic (Claude)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Abstain below confidence <span class="slider-val" id="confVal">0.65</span></label>
+            <div class="slider-row">
+              <input type="range" id="minConf" min="0.3" max="0.95" step="0.05" value="0.65" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Calibration temperature <span class="slider-val" id="tempVal">1.0</span></label>
+            <div class="slider-row">
+              <input type="range" id="temp" min="1" max="3" step="0.1" value="1" />
+            </div>
+          </div>
+
+          <button class="btn" id="diagnoseBtn" disabled>
+            <span id="btnLabel">Diagnose</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- RIGHT: results -->
+      <section class="card">
+        <div class="pad results">
+          <h2>Diagnosis</h2>
+
+          <div class="placeholder" id="placeholder">
+            <div class="big">🩺</div>
+            <div>Upload a leaf photo and hit <strong>Diagnose</strong>.</div>
+            <div style="font-size:12.5px;margin-top:6px;">The model predicts; the system abstains when unsure; guidance comes only from the curated knowledge base.</div>
+          </div>
+
+          <div class="skeleton" id="skeleton">
+            <div class="sk-line" style="width:55%;height:24px"></div>
+            <div class="sk-line" style="width:100%;margin-top:18px"></div>
+            <div class="sk-line" style="width:80%"></div>
+            <div class="sk-line" style="width:90%"></div>
+            <div class="sk-line" style="width:70%"></div>
+          </div>
+
+          <div id="result" style="display:none"></div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="foot">
+      Vision: <code id="footModel">…</code> · Demonstration tool — confirm with a local agricultural extension before applying treatments.
+    </footer>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

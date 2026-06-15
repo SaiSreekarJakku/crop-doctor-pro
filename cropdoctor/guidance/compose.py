@@ -23,8 +23,10 @@ _SYSTEM = (
     "to re-present that entry as clear advice for a grower. Strict rules:\n"
     "1. Do NOT introduce any treatment, chemical, product, or step that is not "
     "present in the provided entry. No new fungicides, no dosages.\n"
-    "2. You may rephrase for clarity and tailor the summary to the stated "
-    "confidence, but every action item must paraphrase an item in the entry.\n"
+    "2. Keep the SAME number of items in each list as the entry, and keep each "
+    "item a close paraphrase of the corresponding entry item — reuse its key "
+    "nouns (leaves, mulch, copper, fungicide, spacing, etc.). Do not merge, "
+    "split, add, or drop items. You have the most freedom in the summary.\n"
     "3. Reply with ONLY a JSON object: {\"summary\": str, \"immediate_steps\": "
     "[str], \"treatment_options\": [str], \"prevention\": [str]}."
 )
@@ -106,7 +108,7 @@ def compose_guidance(
     )
 
     try:
-        raw = provider.complete(_SYSTEM, user)
+        raw = provider.complete(_SYSTEM, user, temperature=0.1)
     except Exception:
         return _deterministic(entry, confidence, f"{provider.name}->fallback:error", {})
 

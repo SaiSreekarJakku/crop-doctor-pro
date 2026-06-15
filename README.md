@@ -34,7 +34,7 @@ CLI-only with template guidance and no calibration, OOD handling, LLM, or eval.
 | Guidance | Templates only | ✅ **Provider-agnostic LLM** (OpenAI / Anthropic / Ollama) **or** deterministic, your choice |
 | Faithfulness / grounding | Source attribution | ✅ Grounding check that rejects hallucinated treatments → auto-fallback |
 | Knowledge base | YAML | ✅ YAML, 27 entries / 6 crops, validated on load |
-| Interface | CLI only | ✅ CLI **and** web UI (upload a photo) |
+| Interface | CLI only | ✅ CLI **and** a modern web UI (FastAPI + custom frontend: drag-drop, animated bars, dark theme) |
 | Train your own | Described | ✅ Runnable PlantVillage fine-tune + calibration pipeline |
 | Evaluation | — | ✅ Accuracy + **ECE** + **risk–coverage** harness |
 | Tests | pytest | ✅ 16 pytest tests, deterministic, no download |
@@ -85,8 +85,9 @@ python -m cropdoctor diagnose examples/tomato_early_blight.jpg --crop tomato
 # 2) Raw JSON (machine-readable)
 python -m cropdoctor diagnose examples/apple_scab.jpg --json
 
-# 3) Launch the web UI — upload a photo in the browser
-python -m cropdoctor serve            # http://127.0.0.1:7860
+# 3) Launch the modern web UI — drag a photo in the browser
+python -m cropdoctor serve            # http://127.0.0.1:7860 (FastAPI + custom frontend)
+# python -m cropdoctor serve-gradio   # legacy Gradio UI (fallback)
 
 # 4) Inspect the knowledge base / providers
 python -m cropdoctor info

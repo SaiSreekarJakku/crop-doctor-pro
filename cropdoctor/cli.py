@@ -10,9 +10,27 @@ this one takes a real image path and runs a real model.
 from __future__ import annotations
 
 import json
+import os
 from typing import Optional
 
 import typer
+
+
+def _load_dotenv(path: str = ".env") -> None:
+    """Minimal .env loader (no dependency). Existing env vars win."""
+    if not os.path.isfile(path):
+        return
+    with open(path) as fh:
+        for line in fh:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, val = line.partition("=")
+            key, val = key.strip(), val.strip().strip('"').strip("'")
+            os.environ.setdefault(key, val)
+
+
+_load_dotenv()
 
 from .gate.gate import GateConfig
 from .kb.loader import load_kb
@@ -100,7 +118,16 @@ def info():
 
 @app.command()
 def serve(host: str = "127.0.0.1", port: int = 7860):
-    """Launch the web UI (Gradio)."""
+    """Launch the modern web UI (FastAPI + custom frontend)."""
+    from .server import serve as _serve
+
+    typer.secho(f"Crop Doctor Pro → http://{host}:{port}", fg="green", bold=True)
+    _serve(host=host, port=port)
+
+
+@app.command(name="serve-gradio")
+def serve_gradio(host: str = "127.0.0.1", port: int = 7861):
+    """Launch the legacy Gradio UI (fallback)."""
     from .webapp import build_ui
 
     build_ui().launch(server_name=host, server_port=port)

@@ -32,4 +32,4 @@ cropdoctor = "cropdoctor.cli:app"
 include = ["cropdoctor*"]
 
 [tool.setuptools.package-data]
-cropdoctor = ["kb/data/*.yaml"]
+cropdoctor = ["kb/data/*.yaml", "web/*"]

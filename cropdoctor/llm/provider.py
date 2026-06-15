@@ -66,7 +66,7 @@ def _auto_detect() -> Optional[str]:
         return "openai"
     if os.getenv("ANTHROPIC_API_KEY"):
         return "anthropic"
-    if os.getenv("OLLAMA_HOST") or os.getenv("OLLAMA_MODEL"):
+    if os.getenv("OLLAMA_API_KEY") or os.getenv("OLLAMA_HOST") or os.getenv("OLLAMA_MODEL"):
         return "ollama"
     return None
 

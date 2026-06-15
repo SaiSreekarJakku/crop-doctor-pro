@@ -124,6 +124,24 @@ def test_faithfulness_flags_hallucinated_agent():
     assert good["faithful"] is True
 
 
+def test_faithfulness_allows_paraphrase():
+    # Genuine reword of KB content (as a real LLM produces) must pass.
+    kb = load_kb()
+    e = kb.get("tomato_early_blight")
+    paraphrased = verify_guidance(
+        "Early blight, caused by Alternaria solani, shows bullseye lesions on "
+        "older lower leaves and is favored by warm humid weather.",
+        ["Cut off and discard the infected lower leaves; do not add them to compost.",
+         "Stop watering from overhead and water at the soil line early in the day.",
+         "Increase airflow by staking plants and trimming the lower foliage."],
+        ["Apply a copper-based fungicide following the label directions.",
+         "For organic growers, use a Bacillus subtilis bio-fungicide as directed."],
+        ["Lay mulch around the plant base to keep soil splashes off the leaves.",
+         "Space plants for good air movement and select resistant varieties."],
+        e)
+    assert paraphrased["faithful"] is True, paraphrased
+
+
 # ---------- guidance ----------
 def test_deterministic_guidance_is_kb_verbatim():
     kb = load_kb()
